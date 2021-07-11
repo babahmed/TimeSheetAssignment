@@ -1,7 +1,10 @@
 ﻿
+using AspNetCoreHero.Results;
 using AutoMapper;
 using FluentAssertions;
 using HimamaTimesheet.Application.Features.Tracker.Commands.Create;
+using HimamaTimesheet.Application.Features.Tracker.Queries.GetById;
+using HimamaTimesheet.Application.Features.Tracker.Queries.GetOpen;
 using HimamaTimesheet.Application.Interfaces.Repositories;
 using HimamaTimesheet.Application.Interfaces.Shared;
 using HimamaTimesheet.Application.Mappings;
@@ -15,6 +18,8 @@ using Moq;
 using PublicWorkflow.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using static HimamaTimesheet.Application.Features.Tracker.Commands.Create.UpdateTrackerCommand;
@@ -74,6 +79,9 @@ namespace HimamaTimesheet.Test.HandlerTest
             //Arange
             var mediator = new Mock<IMediator>();
 
+            mediator.Setup(m => m.Send(It.IsAny<GetOpenTrackerQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<GetTrackerByIdResponse>.Fail());
+
             CreateTrackerCommand command = Mock.Mock.CreateTrackerFaker(Guid.NewGuid().ToString());
             CreateTrackerCommandHandler handler = new CreateTrackerCommandHandler(_timesheet, _uow, _mapper, mediator.Object);
 
@@ -92,23 +100,35 @@ namespace HimamaTimesheet.Test.HandlerTest
             //Arange
             var mediator = new Mock<IMediator>();
 
+            mediator.Setup(m => m.Send(It.IsAny<GetOpenTrackerQuery>(), It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(Result<GetTrackerByIdResponse>.Fail());
+
             CreateTrackerCommand command = Mock.Mock.CreateTrackerFaker(Guid.NewGuid().ToString());
-            command.UserId = null;
             CreateTrackerCommandHandler handler = new CreateTrackerCommandHandler(_timesheet, _uow, _mapper, mediator.Object);
 
             //Act
             var response = await handler.Handle(command, new System.Threading.CancellationToken());
 
+            mediator.Setup(m => m.Send(It.IsAny<GetOpenTrackerQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<GetTrackerByIdResponse>.Success(new GetTrackerByIdResponse() { UserId="",TimeIn=DateTime.Now,TimeOut=null}));
+
+            CreateTrackerCommand command2 = Mock.Mock.CreateTrackerFaker(Guid.NewGuid().ToString());
+            CreateTrackerCommandHandler handler2 = new CreateTrackerCommandHandler(_timesheet, _uow, _mapper, mediator.Object);
+
+            var response2 = await handler2.Handle(command2, new System.Threading.CancellationToken());
+
             //Asert
             //Do the assertion
-            var rec = await _timesheet.GetAsync(x => x.Id == response.Data);
-            rec.Should().BeNull();
+            var rec = await _timesheet.GetAllAsync(x => x.UserId == command.UserId);
+            rec.Count().Should().Be(1);
         }
         [Fact]
         public async Task UpdateTimeSheetAsync()
         {
             //Arange
             var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.Send(It.IsAny<GetOpenTrackerQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<GetTrackerByIdResponse>.Fail());
 
             CreateTrackerCommand command = Mock.Mock.CreateTrackerFaker(Guid.NewGuid().ToString());
             CreateTrackerCommandHandler handler = new CreateTrackerCommandHandler(_timesheet, _uow, _mapper, mediator.Object);
@@ -120,7 +140,7 @@ namespace HimamaTimesheet.Test.HandlerTest
             UpdateCommand.TimeIn = DateTime.Now.AddDays(0.5);
             UpdateTrackerCommandHandler Updatehandler = new UpdateTrackerCommandHandler(_timesheet, _uow);
 
-            var UpdateResponse = await handler.Handle(command, new System.Threading.CancellationToken());
+            var UpdateResponse = await Updatehandler.Handle(UpdateCommand, new System.Threading.CancellationToken());
 
             //Asert
             //Do the assertion
