@@ -1,0 +1,92 @@
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@using HimamaTimesheet.Web.Areas.Catalog.Models
+@{ 
+    var isEditMode = Model.TimeOut != DateTime.MinValue;
+    if (!isEditMode && Model.Id != 0)
+    {
+        Model.TimeOut = DateTime.Now;
+    }
+
+}
+@model TrackerViewModel
+<form id="create-form" method="post" asp-controller="Tracker" asp-action="OnPostCreateOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryModalPost(this);" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6">
+            @if (Model.Id == 0)
+            {
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">@localizer["Time In"]</label>
+                    <div class="col-md-9">
+
+                        @if (isEditMode)
+                        {
+                            @*<input type="datetime" value=@Model.TimeIn asp-for="TimeIn" name="TimeIn" class="form-control" disabled>*@
+                            <input class="form-control" value=@Model.TimeIn asp-for="TimeIn">
+                        }
+                        else
+                        {
+                            @*<input type="datetime" value=@Model.TimeIn asp-for="TimeIn" name="TimeIn" class="form-control">*@
+                            <input class="form-control" asp-for="TimeIn" disabled">
+                        }
+                        <span asp-validation-for="TimeIn" class="text-danger"></span>
+
+                        <input class="form-control" type="hidden"  asp-for="TimeOut">
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">@localizer["Time In"]</label>
+                    <div class="col-md-9">
+
+                        @if (isEditMode)
+                        {
+                            @*<input type="datetime" value=@Model.TimeIn asp-for="TimeIn" name="TimeIn" class="form-control" disabled>*@
+                            <input class="form-control"  asp-for="TimeIn">
+                        }
+                        else
+                        {
+                            @*<input type="datetime" value=@Model.TimeIn asp-for="TimeIn" name="TimeIn" class="form-control">*@
+                            <input class="form-control" asp-for="TimeIn" disable >
+                        }
+                        <span asp-validation-for="TimeIn" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3 col-form-label">@localizer["Time Out"]</label>
+                    <div class="col-md-9">
+                        @if (isEditMode)
+                        {
+                            @*<input type="datetime" value=@Model.TimeOut.ToString() asp-for="TimeOut" name="TimeOut" class="form-control">*@
+                            <input class="form-control" asp-for="TimeOut">
+                        }
+                        else
+                        {
+                            <input class="form-control" asp-for="TimeOut" disable >
+                            @*<input type="datetime" value=@Model.TimeOut.ToString() asp-for="TimeOut" name="TimeOut" class="form-control" disabled>*@
+                        }
+                        <span asp-validation-for="TimeOut" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group justify-content-between" style="margin-bottom: 0px !important">
+        @if (Model.Id == 0)
+        {
+            <button type="submit" class="btn btn-success">Clock In</button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-success">Clock Out</button>
+        }
+        <button type="submit" class="btn btn-default close-button" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

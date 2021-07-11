@@ -1,0 +1,54 @@
+﻿@using HimamaTimesheet.Web.Areas.Catalog.Models
+@model IEnumerable<TrackerViewModel>
+<table id="productTable" class="table table-striped" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Time In</th>
+            <th>Time Out</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var tracker in Model)
+        {
+        <tr>
+            <td>
+                @tracker.Id
+            </td>
+            <td>
+                @tracker.TimeIn
+            </td>
+
+            @if(tracker.TimeOut==DateTime.MinValue){
+            <td>
+            </td>
+            }else{
+            <td>
+                @tracker.TimeOut
+            </td>
+            }
+
+            <td text-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Action
+                    </button>
+                    <div class="dropdown-menu shadow animated--grow-in">
+
+                        <a onclick="jQueryModalGet('/catalog/tracker/OnGetCreateOrEdit?id=@tracker.Id','Clock Out')" class="dropdown-item"><i class="fas fa-pencil-alt"></i>  Clock Out/Edit</a>
+
+
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        $("#trackerTable").DataTable();
+    });
+</script>
