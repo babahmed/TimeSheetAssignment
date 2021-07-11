@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using HimamaTimesheet.Application.Features.Tracker.Queries.GetOpen;
+using FluentValidation;
 
 namespace HimamaTimesheet.Application.Features.Tracker.Commands.Create
 {
@@ -15,6 +16,14 @@ namespace HimamaTimesheet.Application.Features.Tracker.Commands.Create
         public string UserId { get; set; }
         public DateTime TimeIn { get; set; }
         public DateTime? TimeOut { get; set; }
+    }
+    public class CreateTrackerCommandValidator : AbstractValidator<CreateTrackerCommand>
+    {
+        public CreateTrackerCommandValidator()
+        {
+            RuleFor(c => c.UserId).NotNull();
+
+        }
     }
 
     public class CreateTrackerCommandHandler : IRequestHandler<CreateTrackerCommand, Result<int>>
@@ -44,12 +53,12 @@ namespace HimamaTimesheet.Application.Features.Tracker.Commands.Create
             }
 
             //check existing checking
-            if (existingTracker?.Data!=null)
+            if (existingTracker?.Data != null)
             {
                 return Result<int>.Fail("User have pending clock out, kindly complete clock out before clocking back in");
             }
 
-            var overlapingTracker = await _timeSheet.GetAsync(c=>c.TimeIn>request.TimeIn && c.TimeOut< request.TimeIn);
+            var overlapingTracker = await _timeSheet.GetAsync(c => c.TimeIn > request.TimeIn && c.TimeOut < request.TimeIn);
             //Check overlapping checking
             if (overlapingTracker != null)
             {
