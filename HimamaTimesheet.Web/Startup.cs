@@ -1,5 +1,9 @@
 using HimamaTimesheet.Application.Extensions;
 using HimamaTimesheet.Infrastructure.Extensions;
+using HimamaTimesheet.Web.Abstractions;
+using HimamaTimesheet.Web.Extensions;
+using HimamaTimesheet.Web.Services;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,13 +29,23 @@ namespace HimamaTimesheet.Web
         public void ConfigureServices(IServiceCollection services)
         {
 
+
             services.AddApplicationLayer();
+            services.AddInfrastructure(_configuration);
             services.AddPersistenceContexts(_configuration);
             services.AddRepositories();
+            services.AddSharedInfrastructure(_configuration);
+            services.AddMultiLingualSupport();
+            services.AddControllersWithViews().AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+                fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+            });
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddDistributedMemoryCache();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped<IViewRenderService, ViewRenderService>();
 
         }
 
@@ -45,11 +59,13 @@ namespace HimamaTimesheet.Web
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseMultiLingualFeature();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
