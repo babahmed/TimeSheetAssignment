@@ -20,7 +20,7 @@
                 @tracker.TimeIn
             </td>
 
-            @(tracker.TimeOut==DateTime.MinValue){
+            @if(tracker.TimeOut==DateTime.MinValue){
             <td>
             </td>
             }else{

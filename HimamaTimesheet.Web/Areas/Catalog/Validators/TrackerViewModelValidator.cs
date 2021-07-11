@@ -13,7 +13,7 @@ namespace HimamaTimesheet.Web.Areas.Catalog.Validators
                 .NotEqual(DateTime.MinValue)
                 .NotNull().WithMessage("{PropertyName} valid value is required.");
 
-            RuleFor(p => p.TimeIn)
+            RuleFor(p => p.TimeOut)
                 .NotEmpty().GreaterThan(p=>p.TimeIn)
                 .NotNull().WithMessage("{PropertyName} valid value is required.");
         }
