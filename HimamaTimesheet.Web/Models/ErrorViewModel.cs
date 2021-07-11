@@ -1,5 +1,3 @@
-using System;
-
 namespace HimamaTimesheet.Web.Models
 {
     public class ErrorViewModel

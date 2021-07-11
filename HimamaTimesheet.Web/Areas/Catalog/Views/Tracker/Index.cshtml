@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = localizer["Tracker"];
+    ViewData["Caption"] = localizer["Manage Your Time Sheet"];
+}
+@using HimamaTimesheet.Web.Areas.Catalog.Models
+@model TrackerViewModel
+<div class="card">
+    <div class="col-sm-12" style="padding:20px">
+
+        @if (Model == null)
+        {
+        <a onclick="jQueryModalGet('/catalog/tracker/OnGetCreateOrEdit','Clock In')" class="btn bg-success">
+            <i class="fa fa-plus-square"></i> Clock In 
+        </a>
+        }
+        else
+        {
+        <a onclick="jQueryModalGet('/catalog/tracker/OnGetCreateOrEdit','Clock Out')" class="btn bg-success">
+            <i class="fa fa-plus-square"></i>Clock Out
+        </a>
+        }            
+        <a id="reload" class="btn btn-primary text-white">
+            <i class="fa fas fa-bolt"></i>
+            Reload
+        </a>
+</div>
+    <div id="viewAll" class="card-body table-responsive">
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/js/site.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#trackerTable").DataTable();
+            loadData();
+            $('#reload').on('click', function () {
+                loadData();
+            });
+        });
+        function loadData() {
+            $('#viewAll').load('/catalog/tracker/LoadAll');
+        }
+    </script>
+}

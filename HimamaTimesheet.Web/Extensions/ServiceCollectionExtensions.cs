@@ -27,7 +27,12 @@ namespace HimamaTimesheet.Web.Extensions
             #endregion Registering ResourcesPath
 
             services.AddMvc()
-               .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix);
+               .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
+                              .AddDataAnnotationsLocalization(options =>
+                              {
+                                  options.DataAnnotationLocalizerProvider = (type, factory) =>
+                                      factory.Create(typeof(SharedResource));
+                              });
             services.AddRouting(o => o.LowercaseUrls = true);
             services.AddHttpContextAccessor();
             services.Configure<RequestLocalizationOptions>(options =>

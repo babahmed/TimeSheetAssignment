@@ -93,6 +93,7 @@ namespace HimamaTimesheet.Web.Services
                 return sw.ToString();
             }
         }
+
         private IRazorPage FindPage(ActionContext actionContext, string pageName)
         {
             var getPageResult = _razorViewEngine.GetPage(executingFilePath: null, pagePath: pageName);

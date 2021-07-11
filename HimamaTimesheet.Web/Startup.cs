@@ -2,8 +2,13 @@ using HimamaTimesheet.Application.Extensions;
 using HimamaTimesheet.Infrastructure.Extensions;
 using HimamaTimesheet.Web.Abstractions;
 using HimamaTimesheet.Web.Extensions;
+using HimamaTimesheet.Web.Permission;
 using HimamaTimesheet.Web.Services;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
+using AutoMapper;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -28,8 +33,14 @@ namespace HimamaTimesheet.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddNotyf(o =>
+            {
+                o.DurationInSeconds = 10;
+                o.IsDismissable = true;
+                o.HasRippleEffect = true;
+            });
             services.AddApplicationLayer();
             services.AddInfrastructure(_configuration);
             services.AddPersistenceContexts(_configuration);
@@ -47,6 +58,15 @@ namespace HimamaTimesheet.Web
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IViewRenderService, ViewRenderService>();
 
+            services.AddAuthentication()
+               .AddGoogle(options =>
+               {
+                   IConfigurationSection googleAuthNSection =
+                       _configuration.GetSection("Authentication:Google");
+
+                   options.ClientId = googleAuthNSection["ClientId"];
+                   options.ClientSecret = googleAuthNSection["ClientSecret"];
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +82,7 @@ namespace HimamaTimesheet.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseNotyf();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

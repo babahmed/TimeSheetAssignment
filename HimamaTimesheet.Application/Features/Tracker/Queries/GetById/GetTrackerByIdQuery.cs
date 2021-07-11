@@ -11,6 +11,10 @@ namespace HimamaTimesheet.Application.Features.Tracker.Queries.GetById
 {
     public class GetTrackerByIdQuery : IRequest<Result<GetTrackerByIdResponse>>
     {
+        public GetTrackerByIdQuery(int id)
+        {
+            Id = id;
+        }
         public int Id { get; set; }
 
         public class GetTrackerByIdQueryHandler : IRequestHandler<GetTrackerByIdQuery, Result<GetTrackerByIdResponse>>

@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 namespace HimamaTimesheet.Web.Extensions
 {
     public static class ApplicationBuilderExtension
-    {        public static void UseMultiLingualFeature(this IApplicationBuilder app)
+    {
+        public static void UseMultiLingualFeature(this IApplicationBuilder app)
         {
             app.UseRequestLocalization(app.ApplicationServices.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
         }
