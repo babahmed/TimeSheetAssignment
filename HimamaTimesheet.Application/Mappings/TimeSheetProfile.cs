@@ -6,7 +6,7 @@ using HimamaTimesheet.Application.Features.Tracker.Queries.GetById;
 
 namespace HimamaTimesheet.Application.Mappings
 {
-    internal class TimeSheetProfile : Profile
+    public class TimeSheetProfile : Profile
     {
         public TimeSheetProfile()
         {

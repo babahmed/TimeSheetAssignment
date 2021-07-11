@@ -17,7 +17,7 @@ namespace HimamaTimesheet.Application.Features.Tracker.Commands.Create
         public DateTime? TimeOut { get; set; }
     }
 
-    public class CreateProductCommandHandler : IRequestHandler<CreateTrackerCommand, Result<int>>
+    public class CreateTrackerCommandHandler : IRequestHandler<CreateTrackerCommand, Result<int>>
     {
         private readonly IGenericRepository<Timesheet> _timeSheet;
         private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace HimamaTimesheet.Application.Features.Tracker.Commands.Create
 
         private IUnitOfWork _unitOfWork { get; set; }
 
-        public CreateProductCommandHandler(IGenericRepository<Timesheet> timeSheet, IUnitOfWork unitOfWork, IMapper mapper, IMediator mediator)
+        public CreateTrackerCommandHandler(IGenericRepository<Timesheet> timeSheet, IUnitOfWork unitOfWork, IMapper mapper, IMediator mediator)
         {
             _timeSheet = timeSheet;
             _unitOfWork = unitOfWork;
